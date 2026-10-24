@@ -1,6 +1,7 @@
 import { Database } from "bun:sqlite";
 
-const db = new Database("database.sqlite", { create: true });
+const dbPath = process.env.VERCEL ? "/tmp/database.sqlite" : "database.sqlite";
+const db = new Database(dbPath, { create: true });
 
 db.run(`
   CREATE TABLE IF NOT EXISTS users (
