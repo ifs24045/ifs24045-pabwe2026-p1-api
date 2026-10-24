@@ -1,4 +1,5 @@
 import { Database } from "bun:sqlite";
+import bcrypt from "bcryptjs";
 
 const dbPath = process.env.VERCEL ? "/tmp/database.sqlite" : "database.sqlite";
 const db = new Database(dbPath, { create: true });
@@ -26,5 +27,15 @@ db.run(`
     FOREIGN KEY (user_id) REFERENCES users(id)
   )
 `);
+
+// Akun uji coba untuk Web Grading (selalu tersedia di setiap instance)
+const akunUji = db.query("SELECT id FROM users WHERE username = ?").get("penguji");
+if (!akunUji) {
+  db.run("INSERT INTO users (username, password, nama) VALUES (?, ?, ?)", [
+    "penguji",
+    bcrypt.hashSync("penguji123", 10),
+    "Akun Penguji",
+  ]);
+}
 
 export default db;
